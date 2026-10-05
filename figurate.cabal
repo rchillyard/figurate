@@ -1,0 +1,36 @@
+cabal-version:      3.0
+name:               figurate
+version:            0.1.0.0
+synopsis:           Triangular numbers and their figurate relatives: a tour of Haskell
+author:             Robin Hillyard
+build-type:         Simple
+extra-doc-files:    README.md
+
+-- Settings shared by every component below.
+common shared
+    default-language: Haskell2010
+    ghc-options:      -Wall
+    build-depends:    base >=4.14 && <5
+
+-- The library holds all the mathematics; the executable and tests use it.
+library
+    import:           shared
+    hs-source-dirs:   src
+    exposed-modules:  Figurate.Triangular
+                      Figurate.Family
+                      Figurate.Picture
+                      Figurate.Identities
+
+executable figurate
+    import:           shared
+    hs-source-dirs:   app
+    main-is:          Main.hs
+    build-depends:    figurate
+
+test-suite figurate-test
+    import:           shared
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Spec.hs
+    build-depends:    figurate,
+                      QuickCheck >=2.14
