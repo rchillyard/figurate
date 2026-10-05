@@ -20,6 +20,7 @@ library
                       Figurate.Family
                       Figurate.Picture
                       Figurate.Identities
+                      Figurate.Peano
 
 executable figurate
     import:           shared

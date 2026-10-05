@@ -82,10 +82,15 @@ Haskell ideas, and the comments explain them as they come up.
 4. **[src/Figurate/Identities.hs](src/Figurate/Identities.hs)** collects famous identities.
    *Records, functions as data, lambdas, `$`, comprehensions with several
    generators as nested loops, using laziness to stop at the first result.*
-5. **[app/Main.hs](app/Main.hs)** is the command-line program.
+5. **[src/Figurate/Peano.hs](src/Figurate/Peano.hs)** builds the natural
+   numbers from zero and successor, and defines T(n) on them.
+   *Recursive data types, Peano's axioms as equations, literal and as-patterns,
+   folds over your own type, writing `Num` and `Enum` instances by hand,
+   an infinite number made possible by laziness.*
+6. **[app/Main.hs](app/Main.hs)** is the command-line program.
    *IO and `do` notation, pattern matching on lists, continuations, keeping
    effects at the edge of a pure program.*
-6. **[test/Spec.hs](test/Spec.hs)** holds property-based tests with QuickCheck.
+7. **[test/Spec.hs](test/Spec.hs)** holds property-based tests with QuickCheck.
    *Stating laws that should hold for all inputs, generators, and why a
    type class (`Testable`) lets one function `property` accept so many
    different kinds of argument.*
@@ -96,7 +101,7 @@ Haskell ideas, and the comments explain them as they come up.
 scope, then try these, and use `:t` on anything you're not sure about:
 
 ```haskell
-ghci> :m + Data.Maybe Figurate.Triangular Figurate.Family Figurate.Picture Figurate.Identities
+ghci> :m + Data.Maybe Figurate.Triangular Figurate.Family Figurate.Picture Figurate.Identities Figurate.Peano
 ghci> take 10 triangulars
 [0,1,3,6,10,15,21,28,36,45]
 ghci> :t triangulars
@@ -114,6 +119,12 @@ ghci> indexIn Pronic 42
 Just 6
 ghci> traverse (mapM_ putStrLn) (picture (Centered 6) 4)
 ghci> filter (\x -> isTriangular x && isJust (indexIn (Polygonal 4) x)) [1..100000]
+ghci> 3 :: Nat                           -- Peano numbers
+S (S (S Z))
+ghci> triangularNat 4 == 10
+True
+ghci> succ (2 :: Nat) < infinity
+True
 ghci> :set +s                            -- show timings
 ghci> triRecursive 1000000               -- compare with triClosedForm 1000000
 ghci> :r                                 -- reload after editing a file
@@ -139,5 +150,8 @@ Roughly in order of difficulty:
    you've got it right.
 6. Replace the `Family` constructors' `Integer` fields with a `newtype Sides`
    that can only be built with values >= 3 (a "smart constructor").
-7. Write `instance Show` for `Picture` by hand. Why can't you, while it's a
+7. In `Peano.hs`, define exponentiation `power :: Nat -> Nat -> Nat` from
+   Peano-style equations, and add a property checking it against `^`.
+   Then rewrite `add` and `mul` using `foldNat`.
+8. Write `instance Show` for `Picture` by hand. Why can't you, while it's a
    `type` synonym, and what changes if you make it a `newtype`?

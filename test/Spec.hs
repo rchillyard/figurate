@@ -12,6 +12,7 @@ import Test.QuickCheck
 
 import Figurate.Family
 import Figurate.Identities
+import Figurate.Peano
 import Figurate.Picture
 import Figurate.Triangular
 
@@ -67,6 +68,33 @@ properties =
   ++ [ ("identity " ++ identityName i, property $ \(Positive n) -> holdsFor i n)
      | i <- identities
      ]
+  ++ peanoProperties
+
+-- | Peano arithmetic must agree with ordinary Integer arithmetic.
+peanoProperties :: [(String, Property)]
+peanoProperties =
+  [ ("Peano: round trip through Nat", property $ \(NonNegative a) ->
+      int (nat a) == a)
+  , ("Peano: addition agrees", property $ \(NonNegative a) (NonNegative b) ->
+      int (nat a + nat b) == a + b)
+  , ("Peano: multiplication agrees", property $ \(NonNegative a) (NonNegative b) ->
+      int (nat a * nat b) == a * b)
+  , ("Peano: minus agrees", property $ \(NonNegative a) (NonNegative b) ->
+      fmap int (minus (nat a) (nat b)) == (if a >= b then Just (a - b) else Nothing))
+  , ("Peano: ordering agrees", property $ \(NonNegative a) (NonNegative b) ->
+      compare (nat a) (nat b) == compare a b)
+  , ("Peano: succ is + 1", property $ \(NonNegative a) ->
+      succ (nat a) == nat a + 1)
+  , ("Peano: triangularNat agrees with triangular", property $ \(NonNegative a) ->
+      int (triangularNat (nat a)) == triangular a)
+  , ("Peano: every number is less than infinity", property $ \(NonNegative a) ->
+      nat a < infinity)
+  ]
+  where
+    nat :: Integer -> Nat
+    nat = fromInteger
+    int :: Nat -> Integer
+    int = toInteger . toNatural
 
 -- | A generator that picks one of the named families at random.
 genFamily :: Gen Family
